@@ -1,8 +1,10 @@
+import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
-import { Check, X, TrendingUp, Flame, Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Check, X, TrendingUp, Flame, Calendar, Volume2, Loader2, Square } from 'lucide-react';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -35,8 +37,53 @@ const ProgressRing = ({ percent, size = 48, strokeWidth = 5, color }: { percent:
 };
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const queryClient = useQueryClient();
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryText, setSummaryText] = useState('');
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const stopSpeaking = useCallback(() => {
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+  }, []);
+
+  const readSummary = useCallback(async () => {
+    if (isSpeaking) { stopSpeaking(); return; }
+    setSummaryLoading(true);
+    setSummaryText('');
+    try {
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/habit-summary`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({}),
+        }
+      );
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: 'Failed' }));
+        throw new Error(err.error || `Error ${resp.status}`);
+      }
+      const { summary } = await resp.json();
+      setSummaryText(summary);
+
+      const utterance = new SpeechSynthesisUtterance(summary);
+      utterance.rate = 1.05;
+      utterance.pitch = 1;
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      setIsSpeaking(true);
+      window.speechSynthesis.speak(utterance);
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to generate summary');
+    } finally {
+      setSummaryLoading(false);
+    }
+  }, [session, isSpeaking, stopSpeaking]);
 
   const { data: habits = [], isLoading: habitsLoading } = useQuery({
     queryKey: ['habits'],
@@ -137,7 +184,32 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Per-habit weekly progress */}
+      {/* Read My Summary */}
+      <div className="space-y-3">
+        <Button
+          onClick={readSummary}
+          disabled={summaryLoading}
+          variant={isSpeaking ? 'destructive' : 'outline'}
+          className="w-full rounded-xl gap-2 h-12 text-base"
+        >
+          {summaryLoading ? (
+            <><Loader2 className="h-5 w-5 animate-spin" /> Generating summary...</>
+          ) : isSpeaking ? (
+            <><Square className="h-4 w-4" /> Stop Reading</>
+          ) : (
+            <><Volume2 className="h-5 w-5" /> Read My Summary</>
+          )}
+        </Button>
+        {summaryText && (
+          <Card className="bg-card border-border/50">
+            <CardContent className="p-4 text-sm text-foreground leading-relaxed">
+              {summaryText}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground">Weekly Progress</h2>
         <div className="grid gap-3">

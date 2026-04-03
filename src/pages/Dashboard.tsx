@@ -37,8 +37,53 @@ const ProgressRing = ({ percent, size = 48, strokeWidth = 5, color }: { percent:
 };
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const queryClient = useQueryClient();
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryText, setSummaryText] = useState('');
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const stopSpeaking = useCallback(() => {
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+  }, []);
+
+  const readSummary = useCallback(async () => {
+    if (isSpeaking) { stopSpeaking(); return; }
+    setSummaryLoading(true);
+    setSummaryText('');
+    try {
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/habit-summary`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({}),
+        }
+      );
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: 'Failed' }));
+        throw new Error(err.error || `Error ${resp.status}`);
+      }
+      const { summary } = await resp.json();
+      setSummaryText(summary);
+
+      const utterance = new SpeechSynthesisUtterance(summary);
+      utterance.rate = 1.05;
+      utterance.pitch = 1;
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      setIsSpeaking(true);
+      window.speechSynthesis.speak(utterance);
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to generate summary');
+    } finally {
+      setSummaryLoading(false);
+    }
+  }, [session, isSpeaking, stopSpeaking]);
 
   const { data: habits = [], isLoading: habitsLoading } = useQuery({
     queryKey: ['habits'],

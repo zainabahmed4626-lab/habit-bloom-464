@@ -8,6 +8,7 @@ import AppLayout from "@/components/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import AddHabit from "@/pages/AddHabit";
 import HabitLogs from "@/pages/HabitLogs";
+import HabitChat from "@/pages/HabitChat";
 import Auth from "@/pages/Auth";
 import NotFound from "@/pages/NotFound";
 

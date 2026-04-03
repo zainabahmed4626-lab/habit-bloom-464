@@ -184,7 +184,32 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Per-habit weekly progress */}
+      {/* Read My Summary */}
+      <div className="space-y-3">
+        <Button
+          onClick={readSummary}
+          disabled={summaryLoading}
+          variant={isSpeaking ? 'destructive' : 'outline'}
+          className="w-full rounded-xl gap-2 h-12 text-base"
+        >
+          {summaryLoading ? (
+            <><Loader2 className="h-5 w-5 animate-spin" /> Generating summary...</>
+          ) : isSpeaking ? (
+            <><Square className="h-4 w-4" /> Stop Reading</>
+          ) : (
+            <><Volume2 className="h-5 w-5" /> Read My Summary</>
+          )}
+        </Button>
+        {summaryText && (
+          <Card className="bg-card border-border/50">
+            <CardContent className="p-4 text-sm text-foreground leading-relaxed">
+              {summaryText}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground">Weekly Progress</h2>
         <div className="grid gap-3">

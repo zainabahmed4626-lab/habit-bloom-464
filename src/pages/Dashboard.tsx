@@ -1,8 +1,10 @@
+import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
-import { Check, X, TrendingUp, Flame, Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Check, X, TrendingUp, Flame, Calendar, Volume2, Loader2, Square } from 'lucide-react';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 import { toast } from 'sonner';
 

@@ -107,9 +107,20 @@ npm run dev
 
 ## 📸 Key Screens
 
-| Dashboard | AI Coach | Add Habit |
-|-----------|----------|-----------|
-| Progress rings, streaks, voice summary | Data-driven chat about your patterns | Custom colors, icons, frequency |
+### Dashboard
+> Real-time progress rings, streak tracking, weekly completion metrics, and one-tap voice summary.
+
+![Dashboard](src/assets/screenshot-dashboard.jpg)
+
+### AI Habit Coach
+> Personalized, data-driven coaching powered by Google Gemini — ask questions about your patterns and get actionable advice.
+
+![AI Coach](src/assets/screenshot-chat.jpg)
+
+### Add Habit
+> Create custom habits with emoji icons, color coding, frequency settings, and weekly targets.
+
+![Add Habit](src/assets/screenshot-addhabit.jpg)
 
 ---
 

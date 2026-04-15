@@ -1,13 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Plus, List, LogOut, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, Plus, List, LogOut, MessageCircle, FlaskConical } from 'lucide-react';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/add-habit', label: 'Add Habit', icon: Plus },
   { to: '/logs', label: 'Habit Logs', icon: List },
   { to: '/chat', label: 'Coach', icon: MessageCircle },
+  { to: '/insights', label: 'Insights', icon: FlaskConical },
 ];
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {

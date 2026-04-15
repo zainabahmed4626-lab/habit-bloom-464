@@ -9,6 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import AddHabit from "@/pages/AddHabit";
 import HabitLogs from "@/pages/HabitLogs";
 import HabitChat from "@/pages/HabitChat";
+import InsightsLab from "@/pages/InsightsLab";
 import Auth from "@/pages/Auth";
 import NotFound from "@/pages/NotFound";
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/add-habit" element={<ProtectedRoute><AddHabit /></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute><HabitChat /></ProtectedRoute>} />
             <Route path="/logs" element={<ProtectedRoute><HabitLogs /></ProtectedRoute>} />
+            <Route path="/insights" element={<ProtectedRoute><InsightsLab /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

@@ -27,6 +27,25 @@ A full-stack habit tracking application with AI coaching, voice summaries, and d
 
 ---
 
+## 🔬 Insights Lab — AI Engineering Deep Dive
+
+The **Insights Lab** is a production LLM analytics pipeline that turns raw behavioral logs into a structured coaching report.
+
+**Pipeline:**
+1. **Data aggregation** — Supabase Edge Function pulls 6 weeks of habit logs, computes a deterministic baseline consistency score, and builds per-habit completion summaries.
+2. **Structured prompting** — Google Gemini (via Lovable AI Gateway) is prompted with a strict JSON schema covering health score, trend classification, at-risk habits, key patterns, and hypothesis-driven experiments.
+3. **Output validation** — Server-side JSON extraction with fallback parsing, type coercion, and field-level guards. Client validates with Zod before rendering.
+4. **Caching** — Reports cached in `localStorage` to avoid redundant LLM calls and reduce latency on repeat views.
+
+**AI engineering concepts demonstrated:**
+- Schema-constrained generation (JSON-only output, no markdown leakage)
+- Grounded prompting (LLM only sees user data + computed baselines, no hallucinated context)
+- Defensive parsing for non-deterministic model outputs
+- Hybrid deterministic + LLM scoring (baseline math anchors the model's health score)
+- Hypothesis → action → success-metric framing for actionable AI recommendations
+
+---
+
 ## 🛠 Tech Stack
 
 | Layer | Technology |
